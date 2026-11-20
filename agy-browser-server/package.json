@@ -1,0 +1,14 @@
+{
+  "name": "agy-browser-server",
+  "version": "1.0.0",
+  "description": "AGY Browser Relay WebSocket Server and CDP Controller",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "test-client": "node test-client.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
