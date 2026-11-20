@@ -72,6 +72,13 @@ npm start
 nohup node agy-browser-server/server.js > /tmp/agy_server.log 2>&1 &
 ```
 
+#### macOS Autostart on Boot (launchd)
+A macOS LaunchAgent is configured to auto-start the server on startup:
+```bash
+launchctl load ~/Library/LaunchAgents/ai.agy.browser.server.plist
+```
+Logs are stored at `~/.gemini/agy-browser-server.log`.
+
 Verify that the server is online:
 ```bash
 curl http://127.0.0.1:9223/status
