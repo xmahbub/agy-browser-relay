@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/banner.png" alt="AGY Browser Banner" width="100%" />
+<img src="assets/banner.png" alt="AGY Browser Banner" width="480" />
 
 # ⚡ AGY Browser Relay
 
