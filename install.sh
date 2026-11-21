@@ -23,38 +23,8 @@ SKILL_TARGET_DIR="$HOME/.gemini/config/skills/agy-browser"
 mkdir -p "$SKILL_TARGET_DIR"
 cp "$PROJECT_DIR/skills/agy-browser/SKILL.md" "$SKILL_TARGET_DIR/SKILL.md"
 
-echo "🔄 3/3: Setting up macOS Auto-Start Service (launchd)..."
-PLIST_FILE="$HOME/Library/LaunchAgents/ai.agy.browser.server.plist"
-mkdir -p "$HOME/Library/LaunchAgents"
-
-cat <<EOF > "$PLIST_FILE"
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>ai.agy.browser.server</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>$NODE_PATH</string>
-        <string>$PROJECT_DIR/agy-browser-server/server.js</string>
-    </array>
-    <key>WorkingDirectory</key>
-    <string>$PROJECT_DIR/agy-browser-server</string>
-    <key>RunAtLoad</key>
-    <true/>
-    <key>KeepAlive</key>
-    <true/>
-    <key>StandardOutPath</key>
-    <string>$HOME/.gemini/agy-browser-server.log</string>
-    <key>StandardErrorPath</key>
-    <string>$HOME/.gemini/agy-browser-server.err.log</string>
-</dict>
-</plist>
-EOF
-
-launchctl unload "$PLIST_FILE" 2>/dev/null || true
-launchctl load "$PLIST_FILE"
+echo "🔄 3/3: Setting up Auto-Start Service (macOS / Linux / Windows)..."
+node "$PROJECT_DIR/agy-browser-server/setup-service.js" install
 
 echo ""
 echo "=================================================="

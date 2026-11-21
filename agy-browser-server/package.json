@@ -6,7 +6,10 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "test-client": "node test-client.js"
+    "test-client": "node test-client.js",
+    "service:install": "node setup-service.js install",
+    "service:uninstall": "node setup-service.js uninstall",
+    "service:status": "node setup-service.js status"
   },
   "dependencies": {
     "ws": "^8.18.0"

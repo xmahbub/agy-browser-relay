@@ -39,7 +39,7 @@ Most agent web-browsing solutions rely on headless Puppeteer/Playwright instance
 
 - 🎯 **Native Chrome DevTools Protocol (CDP)**: Full access to DOM tree, selector resolution, evaluate JavaScript, click, type, and screenshot.
 - 📬 **Live Web Automation**: Read & write emails on Gmail, interact with GitHub, perform Google Lens image lookups, fill dynamic forms.
-- 🔄 **Always-On Daemon**: Includes macOS `launchd` service configuration so the relay starts automatically on system boot.
+- 🔄 **Cross-Platform Auto-Start Service**: Built-in support for macOS (`launchd`), Linux (`systemd` user service), and Windows (`Startup` background launcher) so the relay starts seamlessly on reboot.
 - 🧩 **First-Class Antigravity Skill**: Ships with `skills/agy-browser/SKILL.md` ready to drop into `~/.gemini/config/skills/agy-browser/`.
 - 🔒 **Local & Private**: All communication happens strictly on `127.0.0.1:9223` between your terminal and Chrome. No third-party servers.
 
@@ -60,7 +60,30 @@ cd agy-browser-relay
 The installer will:
 1. Install Node.js dependencies for the relay server.
 2. Register and install the `agy-browser` skill into `~/.gemini/config/skills/agy-browser/`.
-3. Configure the `launchd` auto-start daemon (macOS) so the server runs on port `9223`.
+3. Configure and start the native background auto-start service for your OS (`launchd` on macOS, `systemd` on Linux, Startup launcher on Windows).
+
+### Cross-Platform Service Management
+
+You can manage the background service at any time:
+
+```bash
+cd agy-browser-server
+
+# Check service status
+npm run service:status
+
+# Reinstall or reconfigure service
+npm run service:install
+
+# Uninstall and stop service
+npm run service:uninstall
+```
+
+| OS | Background Mechanism | Configuration File Location |
+| :--- | :--- | :--- |
+| **macOS** | `launchd` LaunchAgent | `~/Library/LaunchAgents/ai.agy.browser.server.plist` |
+| **Linux** | `systemd` user service | `~/.config/systemd/user/ai.agy.browser.server.service` |
+| **Windows** | Startup Launcher (silent background) | `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\ai.agy.browser.server.vbs` |
 
 ### Option 2: Load the Chrome Extension
 
@@ -126,7 +149,9 @@ flowchart LR
 │   ├── popup.html
 │   └── icons/
 ├── agy-browser-server/        # Node.js WebSocket & HTTP Relay Server
-│   ├── index.js
+│   ├── server.js
+│   ├── setup-service.js       # Cross-platform auto-start installer (macOS, Linux, Windows)
+│   ├── test-client.js
 │   └── package.json
 ├── skills/                    # Antigravity Agent Skill
 │   └── agy-browser/
@@ -134,7 +159,7 @@ flowchart LR
 ├── assets/                    # Project logos, banner, and badges
 │   ├── banner.png
 │   └── logo.png
-├── install.sh                 # 1-Click Installation & Launchd Daemon Setup
+├── install.sh                 # 1-Click Installation & Cross-Platform Auto-Start Setup
 └── README.md
 ```
 
