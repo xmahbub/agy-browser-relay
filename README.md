@@ -1,157 +1,156 @@
-# AGY Browser Relay
+<div align="center">
 
-A high-performance Chrome Extension and local WebSocket relay server that connects your active desktop Chrome session to **AGY (Google Antigravity)** AI agents via the Chrome DevTools Protocol (CDP).
+<img src="assets/banner.png" alt="AGY Browser Banner" width="100%" />
 
-With this suite, AGY agents can automate, inspect, click, type, upload files (like Google Lens visual search), and capture screenshots in real Chrome tabs.
+# ⚡ AGY Browser Relay
 
----
+### Supercharge Antigravity & AI Agents with Real Chrome Control
+**Control your actual, daily-driver Google Chrome session via native Chrome DevTools Protocol (CDP). No bot detection. No headless lockouts. 100% human authenticity.**
 
-## Architecture
+[![GitHub stars](https://img.shields.io/github/stars/xmahbub/agy-browser-relay?style=for-the-badge&color=ffd700)](https://github.com/xmahbub/agy-browser-relay/stargazers)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
+[![Chrome MV3](https://img.shields.io/badge/Chrome-Manifest_V3-green.svg?style=for-the-badge&logo=googlechrome)](agy-browser-extension)
+[![Antigravity Compatible](https://img.shields.io/badge/Antigravity-CLI_%26_IDE_Ready-purple.svg?style=for-the-badge)](skills/agy-browser)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-339933.svg?style=for-the-badge&logo=nodedotjs)](https://nodejs.org)
 
-```
-┌─────────────────────────────────┐
-│        Google Chrome            │
-│   ┌─────────────────────────┐   │
-│   │   AGY Browser Relay     │   │
-│   │   (Chrome Extension)    │   │
-│   └────────────┬────────────┘   │
-└────────────────┼────────────────┘
-                 │ WebSocket (ws://127.0.0.1:9223)
-                 ▼
-┌─────────────────────────────────┐
-│     AGY Browser Server          │
-│   (Node.js CDP Controller)      │
-│   • HTTP API (:9223/cmd)        │
-│   • Status (:9223/status)       │
-└────────────────┬────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────┐
-│       Antigravity (AGY)         │
-│     Agent / AI Automations      │
-└─────────────────────────────────┘
-```
+[Features](#-key-features) • [Quick Start](#-quick-start-1-minute) • [Antigravity Integration](#-antigravity-integration) • [Showcase](#-proven-in-action) • [Architecture](#-architecture)
 
 ---
 
-## Repository Structure
+</div>
+
+## 💡 Why AGY Browser Relay?
+
+Most agent web-browsing solutions rely on headless Puppeteer/Playwright instances. They get instantly flagged by Cloudflare, reCAPTCHA, and Google logins.
+
+**AGY Browser Relay is different.** It connects directly to your **existing, logged-in Chrome browser** using a lightweight Manifest V3 extension and a local WebSocket bridge.
+
+| Feature | Standard Headless / Playwright | ⚡ AGY Browser Relay |
+| :--- | :---: | :---: |
+| **Logged-in Profiles** (Gmail, GitHub, X) | ❌ Stored cookies get wiped / blocked | ✅ Uses your live active profiles |
+| **Anti-bot & Cloudflare Detection** | ❌ Fails bot challenges | ✅ 100% genuine browser footprint |
+| **Google Lens & File Drag-and-Drop** | ❌ Complex file mocking | ✅ Seamless native file upload |
+| **Zero Setup Latency** | ❌ Spawns slow Chromium forks | ✅ Instantly commands open tabs |
+| **Antigravity CLI / IDE Ready** | ❌ Manual script integration | ✅ Built-in `/browser` skill support |
+
+---
+
+## ✨ Key Features
+
+- 🎯 **Native Chrome DevTools Protocol (CDP)**: Full access to DOM tree, selector resolution, evaluate JavaScript, click, type, and screenshot.
+- 📬 **Live Web Automation**: Read & write emails on Gmail, interact with GitHub, perform Google Lens image lookups, fill dynamic forms.
+- 🔄 **Always-On Daemon**: Includes macOS `launchd` service configuration so the relay starts automatically on system boot.
+- 🧩 **First-Class Antigravity Skill**: Ships with `skills/agy-browser/SKILL.md` ready to drop into `~/.gemini/config/skills/agy-browser/`.
+- 🔒 **Local & Private**: All communication happens strictly on `127.0.0.1:9223` between your terminal and Chrome. No third-party servers.
+
+---
+
+## 🚀 Quick Start (1 Minute)
+
+### Option 1: Automated 1-Click Install
+
+Clone the repository and run the installer:
+
+```bash
+git clone https://github.com/xmahbub/agy-browser-relay.git
+cd agy-browser-relay
+./install.sh
+```
+
+The installer will:
+1. Install Node.js dependencies for the relay server.
+2. Register and install the `agy-browser` skill into `~/.gemini/config/skills/agy-browser/`.
+3. Configure the `launchd` auto-start daemon (macOS) so the server runs on port `9223`.
+
+### Option 2: Load the Chrome Extension
+
+1. Open Google Chrome and navigate to `chrome://extensions`.
+2. Enable **Developer mode** (toggle in top right).
+3. Click **Load unpacked** and select the [`agy-browser-extension/`](agy-browser-extension) folder.
+4. Pin the **AGY Browser Relay** extension icon. It will connect to `ws://127.0.0.1:9223` automatically!
+
+---
+
+## 🤖 Antigravity Integration
+
+Once installed, Antigravity AI agents can naturally browse the web through your Chrome tabs.
+
+Whenever an agent needs to perform browser automation, it activates the `agy-browser` skill:
+
+```bash
+# Check running tabs
+curl -s http://127.0.0.1:9223/tabs
+
+# Open a new tab
+curl -s -X POST http://127.0.0.1:9223/open -H "Content-Type: application/json" -d '{"url":"https://gmail.com"}'
+
+# Execute script or CDP commands via WebSocket / HTTP bridge
+```
+
+You can also invoke it directly with the `/browser` slash command in your chat interface!
+
+---
+
+## 🔥 Proven in Action
+
+Here are real tasks performed by Antigravity using **AGY Browser Relay**:
+
+1. **Google Lens Image Search**:
+   - Agent uploaded a local potato photo from `~/Downloads/potato.jpeg` straight into Google Lens.
+   - Retrieved real-time visual matches, recipes, and botanical classifications.
+2. **Gmail Automation**:
+   - Opened Gmail in the user's active session.
+   - Composed an email with custom subject & body, attached the downloaded file, and delivered it—bypassing 2FA and bot checks.
+3. **Private GitHub Repository Creation**:
+   - Interacted with GitHub's React UI to create and configure a new private repository and pushed local source code directly.
+
+---
+
+## 🏗️ Architecture
+
+```mermaid
+flowchart LR
+    A["Antigravity Agent (CLI / IDE)"] <-->|"HTTP & WebSocket (Port 9223)"| B["AGY Browser Server (Node.js)"]
+    B <-->|"WebSocket Bridge"| C["AGY Chrome Extension (MV3)"]
+    C <-->|"Chrome Debugger API (CDP)"| D["Live Google Chrome Session (Gmail, GitHub, Web)"]
+```
+
+---
+
+## 📁 Repository Structure
 
 ```
-├── agy-browser-extension/       # Chrome Extension (Manifest V3)
-│   ├── manifest.json            # Extension declaration and permissions
-│   ├── background.js            # Service worker handling relay & tabs
-│   ├── popup.html / popup.js    # Extension popup interface
-│   ├── options.html / options.js# Settings & pairing interface
-│   ├── modules/                 # CDP debugger and tab management
-│   └── icons/                   # Custom AGY pixel icons (16, 32, 48, 128)
-├── agy-browser-server/          # Node.js WebSocket & HTTP relay daemon
-│   ├── package.json
-│   ├── server.js                # Core controller server
-│   └── test-client.js           # Test mock client
-├── skills/                      # AGY Skill definition
+├── agy-browser-extension/     # Chrome Manifest V3 Extension
+│   ├── manifest.json
+│   ├── background.js
+│   ├── popup.html
+│   └── icons/
+├── agy-browser-server/        # Node.js WebSocket & HTTP Relay Server
+│   ├── index.js
+│   └── package.json
+├── skills/                    # Antigravity Agent Skill
 │   └── agy-browser/
-│       └── SKILL.md             # Antigravity skill instructions
-├── search-google.js             # Example text search script
+│       └── SKILL.md
+├── assets/                    # Project logos, banner, and badges
+│   ├── banner.png
+│   └── logo.png
+├── install.sh                 # 1-Click Installation & Launchd Daemon Setup
 └── README.md
 ```
 
 ---
 
-## Quick Start & Installation
+## 🤝 Contributing
 
-### 1. Start the Relay Server
-
-```bash
-cd agy-browser-server
-npm install
-npm start
-```
-
-*Or run in background:*
-```bash
-nohup node agy-browser-server/server.js > /tmp/agy_server.log 2>&1 &
-```
-
-#### macOS Autostart on Boot (launchd)
-A macOS LaunchAgent is configured to auto-start the server on startup:
-```bash
-launchctl load ~/Library/LaunchAgents/ai.agy.browser.server.plist
-```
-Logs are stored at `~/.gemini/agy-browser-server.log`.
-
-Verify that the server is online:
-```bash
-curl http://127.0.0.1:9223/status
-# Returns: {"status":"online","extensionConnected":false,"tabs":[]}
-```
+Contributions, issues, and feature requests are welcome!
+Feel free to check [issues page](https://github.com/xmahbub/agy-browser-relay/issues).
 
 ---
 
-### 2. Install the Chrome Extension
+## 📄 License
 
-1. Open **Google Chrome** and navigate to `chrome://extensions/`.
-2. Toggle on **Developer mode** in the top right.
-3. Click **Load unpacked** (top left).
-4. Select the `agy-browser-extension` directory from this repository.
-5. Click the AGY extension icon or right-click ➔ **Options**.
-6. Under **Server Pairing**, confirm `ws://127.0.0.1:9223` and click **Connect / Pair**.
-7. The extension badge will turn green (**`ON`**).
+Distributed under the MIT License. See `LICENSE` for more information.
 
----
-
-### 3. Install the AGY Skill for Antigravity
-
-To let any AGY agent use this browser capability automatically:
-
-```bash
-mkdir -p ~/.gemini/config/skills/agy-browser
-cp skills/agy-browser/SKILL.md ~/.gemini/config/skills/agy-browser/
-```
-
-Antigravity will automatically discover the `agy-browser` skill.
-
----
-
-## Automating via Scripts or API
-
-### Opening a Tab & Searching Google
-```javascript
-// POST http://127.0.0.1:9223/cmd
-const res = await fetch("http://127.0.0.1:9223/cmd", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    type: "createTab",
-    url: "https://www.google.com"
-  })
-});
-const { result } = await res.json();
-console.log("Opened Tab ID:", result.tabId);
-```
-
-### Sending CDP Commands
-```javascript
-// Attach debugger
-await fetch("http://127.0.0.1:9223/cmd", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ type: "attach", tabId: result.tabId })
-});
-
-// Capture Screenshot
-const screenshotRes = await fetch("http://127.0.0.1:9223/cmd", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    type: "cdp",
-    tabId: result.tabId,
-    method: "Page.captureScreenshot",
-    params: { format: "png" }
-  })
-});
-```
-
----
-
-## License
-MIT
+<div align="center">
+  <sub>Built with ❤️ for the Antigravity & AI Agent Community.</sub>
+</div>
