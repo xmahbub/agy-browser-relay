@@ -4,26 +4,25 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>AGY Browser Relay Settings</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
       :root {
-        --bg-primary: #0a0c10;
-        --bg-surface: #12151c;
-        --bg-card: rgba(22, 27, 38, 0.85);
-        --border-color: rgba(255, 255, 255, 0.08);
-        --border-hover: rgba(124, 58, 237, 0.35);
-        --text-primary: #f8fafc;
-        --text-secondary: #94a3b8;
-        --text-muted: #64748b;
-        --accent-purple: #7c3aed;
-        --accent-cyan: #06b6d4;
-        --accent-gradient: linear-gradient(135deg, #7c3aed 0%, #3b82f6 50%, #06b6d4 100%);
-        --danger-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-        --success: #10b981;
-        --warning: #f59e0b;
-        --error: #ef4444;
+        --bg-app: #0d1117;
+        --bg-subtle: #161b22;
+        --bg-card: #161b22;
+        --bg-code: #090d13;
+        --border-subtle: #30363d;
+        --border-default: #38424d;
+        --border-active: #58a6ff;
+        --text-primary: #e6edf3;
+        --text-secondary: #8b949e;
+        --text-muted: #6e7681;
+        --accent: #58a6ff;
+        --accent-hover: #79c0ff;
+        --success: #3fb950;
+        --warning: #d29922;
+        --danger: #f85149;
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+        --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
       }
 
       * {
@@ -34,93 +33,108 @@
 
       body {
         max-width: 680px;
-        margin: 40px auto;
+        margin: 36px auto;
         padding: 0 24px 60px;
-        background: var(--bg-primary);
+        background-color: var(--bg-app);
         color: var(--text-primary);
-        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-        font-size: 14px;
+        font-family: var(--font-sans);
+        font-size: 13px;
         line-height: 1.5;
-        position: relative;
-      }
-
-      /* Ambient Background Glow */
-      body::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 20%;
-        width: 350px;
-        height: 350px;
-        background: radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%);
-        pointer-events: none;
-        z-index: -1;
       }
 
       header {
         display: flex;
         align-items: center;
-        gap: 16px;
-        margin-bottom: 24px;
+        justify-content: space-between;
         padding-bottom: 20px;
-        border-bottom: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-subtle);
+        margin-bottom: 24px;
       }
 
-      .logo-box {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        background: var(--accent-gradient);
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .logo-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        background: var(--bg-subtle);
+        border: 1px solid var(--border-subtle);
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
       }
 
-      .logo-box img {
-        width: 28px;
-        height: 28px;
+      .logo-icon img {
+        width: 20px;
+        height: 20px;
       }
 
       h1 {
-        font-size: 24px;
-        font-weight: 700;
-        letter-spacing: -0.4px;
-        background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-primary);
+        letter-spacing: -0.3px;
       }
 
-      .subtitle {
+      .header-desc {
+        font-size: 12px;
         color: var(--text-secondary);
-        font-size: 13px;
         margin-top: 2px;
       }
 
-      section {
-        margin-top: 20px;
-        padding: 20px;
+      .tag {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 12px;
+        background: var(--bg-subtle);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-secondary);
+      }
+
+      /* Sections & Cards */
+      .section-group {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .card {
         background: var(--bg-card);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid var(--border-color);
-        border-radius: 14px;
-        transition: border-color 0.2s ease;
+        border: 1px solid var(--border-subtle);
+        border-radius: 8px;
+        overflow: hidden;
       }
 
-      section:hover {
-        border-color: var(--border-hover);
-      }
-
-      h2 {
-        font-size: 15px;
-        font-weight: 600;
-        letter-spacing: -0.2px;
-        color: #ffffff;
-        margin-bottom: 8px;
+      .card-header {
+        padding: 12px 16px;
+        background: #13171f;
+        border-bottom: 1px solid var(--border-subtle);
         display: flex;
         align-items: center;
-        gap: 8px;
+        justify-content: space-between;
+      }
+
+      .card-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .card-body {
+        padding: 16px;
+      }
+
+      /* Status Pill */
+      .status-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
       }
 
       .status-pill {
@@ -128,140 +142,156 @@
         align-items: center;
         gap: 6px;
         padding: 3px 10px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--border-color);
-        margin: 6px 0 12px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+        font-family: var(--font-mono);
+        border: 1px solid var(--border-subtle);
+        background: var(--bg-code);
       }
 
       .status-pill.online {
-        background: rgba(16, 185, 129, 0.12);
-        border-color: rgba(16, 185, 129, 0.3);
-        color: #34d399;
+        color: var(--success);
+        border-color: rgba(63, 185, 80, 0.4);
       }
 
       .status-pill.offline {
-        background: rgba(239, 68, 68, 0.12);
-        border-color: rgba(239, 68, 68, 0.3);
-        color: #f87171;
+        color: var(--danger);
+        border-color: rgba(248, 81, 73, 0.4);
       }
 
-      .muted {
+      .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      .text-muted {
         color: var(--text-secondary);
-        font-size: 13px;
+        font-size: 12px;
         line-height: 1.5;
+      }
+
+      /* Forms */
+      .form-row {
+        margin-top: 12px;
       }
 
       label {
         display: flex;
         align-items: center;
-        gap: 10px;
-        margin: 12px 0;
+        gap: 8px;
         cursor: pointer;
+        font-size: 12px;
         color: var(--text-primary);
-        font-size: 13px;
       }
 
       input[type="checkbox"] {
-        accent-color: var(--accent-purple);
-        width: 16px;
-        height: 16px;
+        accent-color: var(--accent);
         cursor: pointer;
       }
 
       select,
       textarea {
         width: 100%;
-        margin-top: 8px;
-        background: rgba(10, 12, 16, 0.8);
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        padding: 10px 12px;
+        margin-top: 6px;
+        background: var(--bg-code);
+        border: 1px solid var(--border-subtle);
+        border-radius: 6px;
+        padding: 8px 10px;
         color: var(--text-primary);
-        font-family: inherit;
-        font-size: 13px;
+        font-family: var(--font-sans);
+        font-size: 12px;
         outline: none;
-        transition: border-color 0.2s ease;
+        transition: border-color 0.15s ease;
       }
 
       select:focus,
       textarea:focus {
-        border-color: var(--accent-purple);
-        box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+        border-color: var(--accent);
       }
 
       textarea {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 12px;
-        min-height: 72px;
+        font-family: var(--font-mono);
+        min-height: 54px;
         resize: vertical;
+      }
+
+      /* Buttons */
+      .btn-bar {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
       }
 
       button {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
-        padding: 9px 16px;
-        border: none;
-        border-radius: 8px;
-        font-family: inherit;
-        font-size: 13px;
-        font-weight: 600;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-family: var(--font-sans);
+        font-size: 12px;
+        font-weight: 500;
         cursor: pointer;
-        margin-top: 12px;
-        transition: all 0.2s ease;
+        transition: all 0.15s ease;
       }
 
-      .btn-primary {
-        background: var(--accent-gradient);
+      .btn-default {
+        background: var(--bg-subtle);
+        color: var(--text-primary);
+        border: 1px solid var(--border-default);
+      }
+
+      .btn-default:hover {
+        background: #21262d;
+        border-color: #8b949e;
+      }
+
+      .btn-accent {
+        background: #238636;
         color: #ffffff;
-        box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.1);
       }
 
-      .btn-primary:hover {
-        opacity: 0.92;
-        transform: translateY(-1px);
+      .btn-accent:hover {
+        background: #2ea043;
       }
 
       .btn-danger {
-        background: rgba(239, 68, 68, 0.15);
-        color: #fca5a5;
-        border: 1px solid rgba(239, 68, 68, 0.3);
+        background: transparent;
+        color: var(--danger);
+        border: 1px solid rgba(248, 81, 73, 0.4);
       }
 
       .btn-danger:hover {
-        background: rgba(239, 68, 68, 0.25);
-        border-color: rgba(239, 68, 68, 0.5);
+        background: rgba(248, 81, 73, 0.15);
       }
 
-      code {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 12px;
-        background: rgba(255, 255, 255, 0.06);
-        padding: 2px 6px;
-        border-radius: 4px;
-        color: var(--accent-cyan);
-      }
-
-      .code-box {
-        margin: 10px 0;
-        padding: 12px;
-        background: #090b0e;
-        border-radius: 8px;
-        border: 1px solid var(--border-color);
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 12px;
-        color: #cbd5e1;
+      /* Code snippets */
+      .code-snippet {
+        margin-top: 10px;
+        padding: 10px 12px;
+        background: var(--bg-code);
+        border: 1px solid var(--border-subtle);
+        border-radius: 6px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--text-secondary);
         line-height: 1.6;
       }
 
+      .code-snippet span {
+        color: var(--accent);
+      }
+
       #message {
-        margin-top: 16px;
-        font-weight: 500;
-        color: var(--accent-cyan);
+        margin-top: 14px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--accent);
       }
 
       .hidden {
@@ -271,66 +301,100 @@
   </head>
   <body>
     <header>
-      <div class="logo-box">
-        <img src="icons/icon32.png" alt="AGY Icon" />
+      <div class="brand">
+        <div class="logo-icon">
+          <img src="icons/icon32.png" alt="AGY Icon" />
+        </div>
+        <div>
+          <h1>AGY Browser Relay</h1>
+          <div class="header-desc">Chrome DevTools Protocol bridge for Antigravity & AI agents</div>
+        </div>
       </div>
-      <div>
-        <h1>AGY Browser Relay</h1>
-        <p class="subtitle">Real Chrome DevTools Protocol (CDP) Bridge for Antigravity & AI Agents</p>
-      </div>
+      <span class="tag">Local Host Mode</span>
     </header>
 
-    <section id="retiredCustody" class="hidden">
-      <h2>Session Reset Required</h2>
-      <p class="muted">
-        A previous recovery state requires reset. Click <strong>Disconnect & Reset</strong> below and then re-pair with local AGY.
-      </p>
-    </section>
-
-    <section>
-      <h2>Connection Status</h2>
-      <div id="connectionStatus" class="status-pill offline">Checking…</div>
-      <p id="bootstrapStatus" class="muted"></p>
-      <label>
-        <input id="automaticSetup" type="checkbox" />
-        Connect automatically to local relay daemon
-      </label>
-      <button id="useLocal" class="btn-primary" type="button">Connect Local AGY Relay</button>
-    </section>
-
-    <section>
-      <h2>Access Permissions</h2>
-      <p class="muted">Select which browser tabs Antigravity agents can interact with:</p>
-      <select id="accessMode">
-        <option value="all">All Tabs (Recommended for Agent Workflows)</option>
-        <option value="selected">Selected Tabs Only (Manual Approval)</option>
-      </select>
-    </section>
-
-    <section>
-      <h2>Relay Server Configuration</h2>
-      <p class="muted">Local WebSocket endpoint for AGY browser daemon:</p>
-      <textarea
-        id="pairingString"
-        spellcheck="false"
-        placeholder="ws://127.0.0.1:9223"
-      >ws://127.0.0.1:9223</textarea>
-      <button id="pair" type="button" class="btn-primary">Save & Connect</button>
-    </section>
-
-    <section>
-      <h2>Diagnostics & CLI Helper</h2>
-      <p class="muted">To verify your local relay server or run manually from terminal:</p>
-      <div class="code-box">
-        # Verify bridge status<br/>
-        curl http://127.0.0.1:9223/status<br/><br/>
-        # Test active tabs<br/>
-        curl http://127.0.0.1:9223/
+    <div class="section-group">
+      <div id="retiredCustody" class="card hidden">
+        <div class="card-header">
+          <span class="card-title" style="color: var(--warning);">Session Reset Required</span>
+        </div>
+        <div class="card-body">
+          <p class="text-muted">A previous session token requires invalidation before continuing.</p>
+        </div>
       </div>
-      <button id="disconnect" class="btn-danger" type="button">
-        Disconnect & Reset
-      </button>
-    </section>
+
+      <!-- Bridge Status Card -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Bridge Runtime</span>
+          <div id="connectionStatus" class="status-pill offline">
+            <span class="dot"></span>
+            <span>Checking…</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p id="bootstrapStatus" class="text-muted"></p>
+          <div class="form-row">
+            <label>
+              <input id="automaticSetup" type="checkbox" />
+              Auto-discover local daemon on system startup
+            </label>
+          </div>
+          <div class="btn-bar">
+            <button id="useLocal" class="btn-default" type="button">Connect Local Daemon</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scope Settings Card -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Security & Permission Scope</span>
+        </div>
+        <div class="card-body">
+          <p class="text-muted">Configure tab access boundary for agent execution:</p>
+          <div class="form-row">
+            <select id="accessMode">
+              <option value="all">All Browser Tabs (Recommended for automated agent workflows)</option>
+              <option value="selected">Selected Tabs Only (Manual per-tab grant)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- WebSocket Relay URL -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">WebSocket Relay Endpoint</span>
+        </div>
+        <div class="card-body">
+          <p class="text-muted">Local loopback address of the background WebSocket relay:</p>
+          <div class="form-row">
+            <textarea id="pairingString" spellcheck="false" placeholder="ws://127.0.0.1:9223">ws://127.0.0.1:9223</textarea>
+          </div>
+          <div class="btn-bar">
+            <button id="pair" class="btn-accent" type="button">Apply & Reconnect</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Diagnostics Card -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Diagnostics & Terminal Verification</span>
+        </div>
+        <div class="card-body">
+          <p class="text-muted">Run from your terminal to inspect runtime connectivity:</p>
+          <div class="code-snippet">
+            <span>curl</span> http://127.0.0.1:9223/status<br />
+            <span>curl</span> http://127.0.0.1:9223/
+          </div>
+          <div class="btn-bar">
+            <button id="disconnect" class="btn-danger" type="button">Disconnect & Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <p id="message"></p>
     <script type="module" src="options.js"></script>

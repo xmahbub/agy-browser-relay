@@ -9,55 +9,62 @@ const disconnect = document.getElementById("disconnect");
 const message = document.getElementById("message");
 const retiredCustody = document.getElementById("retiredCustody");
 
+function setStatusPill(state, text) {
+  if (!connectionStatus) return;
+  connectionStatus.classList.remove("online", "offline");
+  connectionStatus.classList.add(state);
+  const textSpan = connectionStatus.querySelector("span:last-child");
+  if (textSpan) {
+    textSpan.textContent = text;
+  }
+}
+
 async function refresh() {
-  const status = await chrome.runtime.sendMessage({ type: "getStatus" });
-  const custodyBlocked = status.retiredCopilotCustodyBlocked === true;
-  retiredCustody.classList.toggle("hidden", !custodyBlocked);
-  
-  if (connectionStatus) {
-    connectionStatus.classList.remove("online", "offline");
+  try {
+    const status = await chrome.runtime.sendMessage({ type: "getStatus" });
+    const custodyBlocked = status.retiredCopilotCustodyBlocked === true;
+    retiredCustody.classList.toggle("hidden", !custodyBlocked);
+    
     if (status.paired) {
       if (custodyBlocked) {
-        connectionStatus.textContent = "Session Paused";
-        connectionStatus.classList.add("offline");
+        setStatusPill("offline", "Locked");
       } else if (status.state === "on") {
-        connectionStatus.textContent = "● Connected to Relay Server";
-        connectionStatus.classList.add("online");
+        setStatusPill("online", "Connected");
       } else {
-        connectionStatus.textContent = "● Paired (Relay Offline)";
-        connectionStatus.classList.add("offline");
+        setStatusPill("offline", "Offline");
       }
     } else {
-      connectionStatus.textContent = "● Not Paired";
-      connectionStatus.classList.add("offline");
+      setStatusPill("offline", "Unpaired");
     }
+
+    automaticSetup.checked = !status.nativeBootstrap?.disabled && !custodyBlocked;
+    bootstrapStatus.textContent = custodyBlocked
+      ? "Manual intervention required: session locked."
+      : status.nativeBootstrap?.disabled
+        ? "Automatic background detection is disabled."
+        : status.nativeBootstrap?.state === "manual_required"
+          ? `Port collision or manual connection required (${status.nativeBootstrap.failureCode ?? "port unavailable"}).`
+          : status.nativeBootstrap?.state === "retrying"
+            ? "Waiting for AGY daemon process on 127.0.0.1:9223…"
+            : "Daemon connected and listening.";
+
+    accessMode.value = status.accessMode === "selected" ? "selected" : "all";
+    automaticSetup.disabled = custodyBlocked;
+    useLocal.disabled = custodyBlocked;
+    accessMode.disabled = !status.paired || custodyBlocked;
+    pairingString.disabled = custodyBlocked;
+    pair.disabled = custodyBlocked;
+    disconnect.disabled = !status.paired && !custodyBlocked;
+  } catch (err) {
+    setStatusPill("offline", "Offline");
   }
-
-  automaticSetup.checked = !status.nativeBootstrap?.disabled && !custodyBlocked;
-  bootstrapStatus.textContent = custodyBlocked
-    ? "Reset required before reconnecting"
-    : status.nativeBootstrap?.disabled
-      ? "Auto-connect disabled"
-      : status.nativeBootstrap?.state === "manual_required"
-        ? `Manual connection required (${status.nativeBootstrap.failureCode ?? "port unavailable"})`
-        : status.nativeBootstrap?.state === "retrying"
-          ? "Waiting for AGY daemon on port 9223…"
-          : "AGY local daemon connected";
-
-  accessMode.value = status.accessMode === "selected" ? "selected" : "all";
-  automaticSetup.disabled = custodyBlocked;
-  useLocal.disabled = custodyBlocked;
-  accessMode.disabled = !status.paired || custodyBlocked;
-  pairingString.disabled = custodyBlocked;
-  pair.disabled = custodyBlocked;
-  disconnect.disabled = !status.paired && !custodyBlocked;
 }
 
 async function showResult(task, success) {
   try {
     const result = await task();
     if (result?.ok === false) {
-      throw new Error(result.error ?? "Operation failed.");
+      throw new Error(result.error ?? "Action failed.");
     }
     message.textContent = success;
     setTimeout(() => { message.textContent = ""; }, 4000);
@@ -74,7 +81,7 @@ automaticSetup.addEventListener("change", () => {
         type: "setNativeBootstrapEnabled",
         enabled: automaticSetup.checked,
       }),
-    automaticSetup.checked ? "Enabled auto-connect." : "Disabled auto-connect.",
+    automaticSetup.checked ? "Auto-connect enabled." : "Auto-connect disabled.",
   );
 });
 
@@ -85,7 +92,7 @@ accessMode.addEventListener("change", () => {
         type: "setAccessMode",
         mode: accessMode.value,
       }),
-    `Switched access mode to ${accessMode.value}.`,
+    `Access mode updated to ${accessMode.value}.`,
   );
 });
 
@@ -96,21 +103,21 @@ pair.addEventListener("click", () => {
         type: "pair",
         pairingString: pairingString.value.trim(),
       }),
-    "Saved and paired with relay server.",
+    "Endpoint saved and bridge reconnected.",
   );
 });
 
 useLocal.addEventListener("click", () => {
   void showResult(
     () => chrome.runtime.sendMessage({ type: "connectLocal" }),
-    "Connected to local AGY relay server.",
+    "Connected to local AGY daemon.",
   );
 });
 
 disconnect.addEventListener("click", () => {
   void showResult(
     () => chrome.runtime.sendMessage({ type: "disconnect" }),
-    "Disconnected and reset configuration.",
+    "Configuration reset.",
   );
 });
 
