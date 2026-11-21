@@ -1,4 +1,5 @@
 const statusLine = document.getElementById("status");
+const statusPill = document.getElementById("statusPill");
 const pairedDetails = document.getElementById("pairedDetails");
 const accessMode = document.getElementById("accessMode");
 const tabAction = document.getElementById("tabAction");
@@ -12,37 +13,47 @@ async function activeTab() {
 
 function unpairedLabel(nativeBootstrap) {
   if (nativeBootstrap?.disabled) {
-    return "Automatic setup disabled";
+    return "Local setup disabled";
   }
   if (nativeBootstrap?.state === "manual_required") {
-    return "Manual setup required";
+    return "Manual setup";
   }
-  return "Waiting for local AGY";
+  return "Waiting for server";
+}
+
+function updateStatusUI(state, text) {
+  statusLine.textContent = text;
+  if (!statusPill) return;
+  statusPill.classList.remove("online", "connecting", "offline");
+  statusPill.classList.add(state);
 }
 
 async function refresh() {
   const status = await chrome.runtime.sendMessage({ type: "getStatus" });
   if (status?.ok === false) {
-    statusLine.textContent = status.error ?? "Could not read browser status.";
+    updateStatusUI("offline", "Error reading status");
     return;
   }
   pairedDetails.classList.toggle("hidden", !status.paired);
   if (status.retiredCopilotCustodyBlocked === true) {
-    statusLine.textContent = "Automation paused; open Settings";
+    updateStatusUI("offline", "Paused (Open Settings)");
     tabAction.classList.add("hidden");
     return;
   }
   if (!status.paired) {
-    statusLine.textContent = unpairedLabel(status.nativeBootstrap);
+    updateStatusUI("connecting", unpairedLabel(status.nativeBootstrap));
     tabAction.classList.add("hidden");
     return;
   }
-  statusLine.textContent =
-    status.state === "on"
-      ? "Connected"
-      : status.state === "connecting"
-        ? "Connecting…"
-        : "AGY relay unavailable";
+
+  if (status.state === "on") {
+    updateStatusUI("online", "Connected");
+  } else if (status.state === "connecting") {
+    updateStatusUI("connecting", "Connecting…");
+  } else {
+    updateStatusUI("offline", "Server offline");
+  }
+
   accessMode.textContent = status.accessMode === "selected" ? "Selected tabs" : "All tabs";
   const tab = await activeTab();
   if (tab?.id === undefined) {
@@ -51,7 +62,7 @@ async function refresh() {
   }
   const access = await chrome.runtime.sendMessage({ type: "getTabAccess", tabId: tab.id });
   tabAction.classList.toggle("hidden", !access.eligible);
-  tabAction.textContent = access.accessible ? "Pause on this tab" : "Allow on this tab";
+  tabAction.textContent = access.accessible ? "Pause relay on this tab" : "Enable relay on this tab";
   tabAction.dataset.tabId = String(tab.id);
   tabAction.dataset.mode = status.accessMode;
   tabAction.dataset.grant = String(!access.accessible);

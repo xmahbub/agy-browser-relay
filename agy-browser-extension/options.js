@@ -13,23 +13,37 @@ async function refresh() {
   const status = await chrome.runtime.sendMessage({ type: "getStatus" });
   const custodyBlocked = status.retiredCopilotCustodyBlocked === true;
   retiredCustody.classList.toggle("hidden", !custodyBlocked);
-  connectionStatus.textContent = status.paired
-    ? custodyBlocked
-      ? "Paired; automation paused"
-      : status.state === "on"
-        ? "Connected"
-        : "Paired; relay unavailable"
-    : "Not paired";
+  
+  if (connectionStatus) {
+    connectionStatus.classList.remove("online", "offline");
+    if (status.paired) {
+      if (custodyBlocked) {
+        connectionStatus.textContent = "Session Paused";
+        connectionStatus.classList.add("offline");
+      } else if (status.state === "on") {
+        connectionStatus.textContent = "● Connected to Relay Server";
+        connectionStatus.classList.add("online");
+      } else {
+        connectionStatus.textContent = "● Paired (Relay Offline)";
+        connectionStatus.classList.add("offline");
+      }
+    } else {
+      connectionStatus.textContent = "● Not Paired";
+      connectionStatus.classList.add("offline");
+    }
+  }
+
   automaticSetup.checked = !status.nativeBootstrap?.disabled && !custodyBlocked;
   bootstrapStatus.textContent = custodyBlocked
-    ? "Retired recovery state requires confirmation"
+    ? "Reset required before reconnecting"
     : status.nativeBootstrap?.disabled
-      ? "Automatic setup disabled"
+      ? "Auto-connect disabled"
       : status.nativeBootstrap?.state === "manual_required"
-        ? `Manual setup required (${status.nativeBootstrap.failureCode ?? "unsupported topology"})`
+        ? `Manual connection required (${status.nativeBootstrap.failureCode ?? "port unavailable"})`
         : status.nativeBootstrap?.state === "retrying"
-          ? "Waiting for the local native host"
-          : "Automatic bootstrap ready";
+          ? "Waiting for AGY daemon on port 9223…"
+          : "AGY local daemon connected";
+
   accessMode.value = status.accessMode === "selected" ? "selected" : "all";
   automaticSetup.disabled = custodyBlocked;
   useLocal.disabled = custodyBlocked;
@@ -46,6 +60,7 @@ async function showResult(task, success) {
       throw new Error(result.error ?? "Operation failed.");
     }
     message.textContent = success;
+    setTimeout(() => { message.textContent = ""; }, 4000);
   } catch (error) {
     message.textContent = error instanceof Error ? error.message : String(error);
   }
@@ -59,36 +74,43 @@ automaticSetup.addEventListener("change", () => {
         type: "setNativeBootstrapEnabled",
         enabled: automaticSetup.checked,
       }),
-    automaticSetup.checked ? "Automatic setup enabled." : "Automatic setup disabled.",
+    automaticSetup.checked ? "Enabled auto-connect." : "Disabled auto-connect.",
   );
 });
-useLocal.addEventListener("click", () => {
-  void showResult(
-    () => chrome.runtime.sendMessage({ type: "setNativeBootstrapEnabled", enabled: true }),
-    "Looking for local AGY…",
-  );
-});
+
 accessMode.addEventListener("change", () => {
   void showResult(
-    () => chrome.runtime.sendMessage({ type: "setAccessMode", accessMode: accessMode.value }),
-    "Access mode updated.",
+    () =>
+      chrome.runtime.sendMessage({
+        type: "setAccessMode",
+        mode: accessMode.value,
+      }),
+    `Switched access mode to ${accessMode.value}.`,
   );
 });
+
 pair.addEventListener("click", () => {
   void showResult(
     () =>
       chrome.runtime.sendMessage({
         type: "pair",
-        pairingString: pairingString.value,
-        accessMode: accessMode.value,
+        pairingString: pairingString.value.trim(),
       }),
-    "Manual pairing saved.",
+    "Saved and paired with relay server.",
   );
 });
+
+useLocal.addEventListener("click", () => {
+  void showResult(
+    () => chrome.runtime.sendMessage({ type: "connectLocal" }),
+    "Connected to local AGY relay server.",
+  );
+});
+
 disconnect.addEventListener("click", () => {
   void showResult(
-    () => chrome.runtime.sendMessage({ type: "unpair" }),
-    "Disconnected. Automatic setup is disabled.",
+    () => chrome.runtime.sendMessage({ type: "disconnect" }),
+    "Disconnected and reset configuration.",
   );
 });
 

@@ -3,96 +3,348 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>AGY</title>
+    <title>AGY Browser Relay</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
       :root {
-        color-scheme: light dark;
-        font:
-          13px/1.4 system-ui,
-          sans-serif;
+        --bg-primary: #0a0c10;
+        --bg-surface: #12151c;
+        --bg-card: rgba(26, 31, 44, 0.7);
+        --border-color: rgba(255, 255, 255, 0.08);
+        --border-hover: rgba(124, 58, 237, 0.3);
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --text-muted: #64748b;
+        --accent-purple: #7c3aed;
+        --accent-cyan: #06b6d4;
+        --accent-gradient: linear-gradient(135deg, #7c3aed 0%, #3b82f6 50%, #06b6d4 100%);
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
       }
-      body {
-        width: 280px;
+
+      * {
+        box-sizing: border-box;
         margin: 0;
-        padding: 16px;
-        background: #17191d;
-        color: #f5f7fa;
+        padding: 0;
       }
+
+      body {
+        width: 320px;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        font-size: 13px;
+        line-height: 1.5;
+        padding: 16px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Subtle ambient glow effect */
+      body::before {
+        content: '';
+        position: absolute;
+        top: -40px;
+        left: -40px;
+        width: 140px;
+        height: 140px;
+        background: radial-gradient(circle, rgba(124, 58, 237, 0.25) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      body::after {
+        content: '';
+        position: absolute;
+        bottom: -40px;
+        right: -40px;
+        width: 140px;
+        height: 140px;
+        background: radial-gradient(circle, rgba(6, 182, 212, 0.2) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .content-wrapper {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Header */
       header {
         display: flex;
         align-items: center;
-        gap: 9px;
+        justify-content: space-between;
         margin-bottom: 14px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-color);
       }
-      img {
-        width: 24px;
-        height: 24px;
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
       }
-      h1 {
-        margin: 0;
+
+      .brand-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: var(--accent-gradient);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35);
+      }
+
+      .brand-icon img {
+        width: 20px;
+        height: 20px;
+      }
+
+      .brand-title {
         font-size: 15px;
+        font-weight: 700;
+        letter-spacing: -0.3px;
+        background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
       }
+
+      .version-tag {
+        font-size: 10px;
+        font-weight: 600;
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--accent-cyan);
+        background: rgba(6, 182, 212, 0.12);
+        padding: 2px 6px;
+        border-radius: 6px;
+        border: 1px solid rgba(6, 182, 212, 0.25);
+      }
+
+      /* Main Card */
       .card {
-        border: 1px solid #343941;
-        border-radius: 10px;
-        padding: 12px;
-        background: #202329;
+        background: var(--bg-card);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 14px;
+        margin-bottom: 12px;
+        transition: border-color 0.2s ease;
       }
-      .row {
+
+      .card:hover {
+        border-color: var(--border-hover);
+      }
+
+      /* Status Badge */
+      .status-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-color);
+      }
+
+      .pulse-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--text-muted);
+      }
+
+      .status-pill.online {
+        background: rgba(16, 185, 129, 0.12);
+        border-color: rgba(16, 185, 129, 0.3);
+        color: #34d399;
+      }
+      .status-pill.online .pulse-dot {
+        background: #10b981;
+        box-shadow: 0 0 8px #10b981;
+      }
+
+      .status-pill.connecting {
+        background: rgba(245, 158, 11, 0.12);
+        border-color: rgba(245, 158, 11, 0.3);
+        color: #fbbf24;
+      }
+      .status-pill.connecting .pulse-dot {
+        background: #f59e0b;
+        box-shadow: 0 0 8px #f59e0b;
+      }
+
+      .status-pill.offline {
+        background: rgba(239, 68, 68, 0.12);
+        border-color: rgba(239, 68, 68, 0.3);
+        color: #f87171;
+      }
+      .status-pill.offline .pulse-dot {
+        background: #ef4444;
+      }
+
+      .info-row {
         display: flex;
         justify-content: space-between;
-        gap: 12px;
-        margin-top: 8px;
+        align-items: center;
+        padding: 6px 0;
+        font-size: 12px;
       }
-      .muted {
-        color: #aeb5c0;
+
+      .info-label {
+        color: var(--text-secondary);
       }
-      #status {
-        margin: 0;
-        font-weight: 600;
+
+      .info-value {
+        font-weight: 500;
+        color: var(--text-primary);
+        font-family: 'JetBrains Mono', monospace;
       }
+
+      /* Action Buttons */
+      .button-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
       button {
         width: 100%;
-        margin-top: 12px;
-        padding: 8px 10px;
-        border: 0;
+        padding: 9px 12px;
+        border: none;
         border-radius: 8px;
-        font: inherit;
-        cursor: pointer;
-      }
-      #tabAction {
-        background: #ff5a36;
-        color: white;
+        font-family: inherit;
+        font-size: 12px;
         font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s ease;
       }
-      #settings {
-        background: transparent;
-        color: #cbd2dc;
-        border: 1px solid #40464f;
+
+      .btn-primary {
+        background: var(--accent-gradient);
+        color: #ffffff;
+        box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
       }
+
+      .btn-primary:hover {
+        opacity: 0.95;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(124, 58, 237, 0.45);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.09);
+        color: var(--text-primary);
+        border-color: var(--border-hover);
+      }
+
+      .port-indicator {
+        font-size: 11px;
+        color: var(--text-muted);
+        text-align: center;
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+      }
+
+      .port-indicator span {
+        color: var(--accent-cyan);
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 500;
+      }
+
       .hidden {
-        display: none;
+        display: none !important;
       }
+
       #error {
-        margin: 9px 0 0;
-        color: #ff9f8b;
+        margin-top: 8px;
+        padding: 6px 10px;
+        border-radius: 6px;
+        background: rgba(239, 68, 68, 0.15);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #fca5a5;
+        font-size: 11px;
       }
     </style>
   </head>
   <body>
-    <header>
-      <img src="icons/icon32.png" alt="" />
-      <h1>AGY Browser</h1>
-    </header>
-    <main class="card">
-      <p id="status">Checking connection…</p>
-      <div id="pairedDetails" class="hidden">
-        <div class="row"><span class="muted">Access</span><span id="accessMode">—</span></div>
-        <button id="tabAction" type="button" class="hidden"></button>
+    <div class="content-wrapper">
+      <header>
+        <div class="brand">
+          <div class="brand-icon">
+            <img src="icons/icon32.png" alt="AGY Logo" />
+          </div>
+          <div>
+            <div class="brand-title">AGY Browser</div>
+          </div>
+        </div>
+        <span class="version-tag">RELAY MV3</span>
+      </header>
+
+      <main class="card">
+        <div class="status-container">
+          <span class="info-label">Bridge Status</span>
+          <div id="statusPill" class="status-pill connecting">
+            <span class="pulse-dot"></span>
+            <span id="status">Connecting…</span>
+          </div>
+        </div>
+
+        <div id="pairedDetails" class="hidden">
+          <div class="info-row">
+            <span class="info-label">Scope</span>
+            <span id="accessMode" class="info-value">All Tabs</span>
+          </div>
+        </div>
+
+        <p id="error" class="hidden"></p>
+      </main>
+
+      <div class="button-group">
+        <button id="tabAction" type="button" class="btn-primary hidden">
+          <span>Allow on this tab</span>
+        </button>
+        <button id="settings" type="button" class="btn-secondary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          Settings & Relay Bridge
+        </button>
       </div>
-      <p id="error" class="hidden"></p>
-      <button id="settings" type="button">Settings</button>
-    </main>
+
+      <div class="port-indicator">
+        Port: <span>127.0.0.1:9223</span>
+      </div>
+    </div>
+
     <script type="module" src="popup.js"></script>
   </body>
 </html>
