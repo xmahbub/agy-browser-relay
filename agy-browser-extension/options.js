@@ -90,7 +90,7 @@ accessMode.addEventListener("change", () => {
     () =>
       chrome.runtime.sendMessage({
         type: "setAccessMode",
-        mode: accessMode.value,
+        accessMode: accessMode.value,
       }),
     `Access mode updated to ${accessMode.value}.`,
   );
@@ -102,6 +102,7 @@ pair.addEventListener("click", () => {
       chrome.runtime.sendMessage({
         type: "pair",
         pairingString: pairingString.value.trim(),
+        accessMode: accessMode.value,
       }),
     "Endpoint saved and bridge reconnected.",
   );
@@ -109,15 +110,15 @@ pair.addEventListener("click", () => {
 
 useLocal.addEventListener("click", () => {
   void showResult(
-    () => chrome.runtime.sendMessage({ type: "connectLocal" }),
+    () => chrome.runtime.sendMessage({ type: "setNativeBootstrapEnabled", enabled: true }),
     "Connected to local AGY daemon.",
   );
 });
 
 disconnect.addEventListener("click", () => {
   void showResult(
-    () => chrome.runtime.sendMessage({ type: "disconnect" }),
-    "Configuration reset.",
+    () => chrome.runtime.sendMessage({ type: "unpair" }),
+    "Disconnected and configuration reset.",
   );
 });
 
